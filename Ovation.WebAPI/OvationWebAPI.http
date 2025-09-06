@@ -1,0 +1,6 @@
+@OvationWebAPI_HostAddress = http://localhost:5037
+
+GET {{OvationWebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
