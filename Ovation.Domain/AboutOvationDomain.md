@@ -1,15 +1,16 @@
 # Ovation Domain Layer
 
 ## Overview
-The Ovation.Domain layer represents the core business logic and domain entities of the Ovation application, which appears to be a comprehensive NFT (Non-Fungible Token) portfolio management and social platform. This layer follows Domain-Driven Design (DDD) principles and contains the fundamental entities that model the business domain.
+The Ovation.Domain layer represents the core business logic and domain entities of the Ovation application, which is a comprehensive NFT (Non-Fungible Token) portfolio management and social platform. This layer follows Domain-Driven Design (DDD) principles and contains the fundamental entities that model the business domain.
 
 ## Core Features & Functionalities
 
 ### 1. User Management System
 - **User Entity**: Central entity representing platform users with authentication (Google ID, password), profile information, and activity tracking
-- **User Profile**: Extended user information including display name, birth date, location, bio, and profile/cover images
-- **User Social**: Integration with various social platforms (LinkedIn, Lens, Twitter, Blur, Foundation, etc.)
-- **User Verification**: System for user verification and validation processes
+- **UserProfile**: Extended user information including display name, location, bio, and profile/cover images
+- **UserSocial**: Integration with various social platforms (LinkedIn, Lens, Twitter, Blur, Foundation, etc.)
+- **VerifiedUser**: System for user verification and validation processes
+- **VerifyUser**: User verification codes and validation tracking
 
 ### 2. NFT Portfolio Management
 - **UserNftDatum**: Core NFT entity storing token details, metadata, pricing information, and ownership data
@@ -18,6 +19,8 @@ The Ovation.Domain layer represents the core business logic and domain entities 
 - **UserWallet**: Multi-chain wallet management supporting various blockchains
 - **UserNftTransaction**: Transaction history tracking for NFT activities
 - **UserHighestNft**: Tracking of highest-value NFTs in user portfolios
+- **UserNftActivity**: NFT activity tracking and event logging
+- **UserNftRecord**: NFT ownership records and historical data
 
 > **⚠️ Deprecated**: `UserNft` and `UserNftCollection` entities are deprecated. Use `UserNftDatum` and `UserNftCollectionDatum` for new development.
 
@@ -27,6 +30,7 @@ The Ovation.Domain layer represents the core business logic and domain entities 
 - **UserNotification**: Comprehensive notification system with initiator/receiver relationships
 - **UserFeedback**: User feedback and rating system
 - **UserFeaturedItem**: Featured content and user highlights
+- **UserReferral**: User referral and invitation system
 
 ### 4. Gamification & Achievement System
 - **Badge System**: Achievement badges with descriptions, images, and ordering
@@ -34,6 +38,8 @@ The Ovation.Domain layer represents the core business logic and domain entities 
 - **UserBadge**: User-badge relationships and earned achievements
 - **UserExperience**: Experience points and progression tracking
 - **UserTask**: Task management and completion tracking
+- **Milestone**: Milestone definitions and requirements
+- **MilestoneTask**: Individual tasks within milestones
 
 ### 5. Blue Chip & Premium NFT Tracking
 - **BlueChip**: Premium NFT collection definitions and metadata
@@ -42,8 +48,8 @@ The Ovation.Domain layer represents the core business logic and domain entities 
 
 ### 6. Analytics & Statistics
 - **UserStat**: Comprehensive user statistics including:
-  - Social metrics (followers, following)
-  - NFT metrics (created, collected, total count)
+  - Social metrics (followers, following, X followers/following)
+  - NFT metrics (created, collected, total count, collections)
   - Financial metrics (net worth, sold NFTs value)
   - Achievement metrics (badges earned, blue chip count)
   - Engagement metrics (profile views)
@@ -63,12 +69,15 @@ The Ovation.Domain layer represents the core business logic and domain entities 
 - **DeveloperToken**: Developer access management and authentication
 - **ChainRate**: Blockchain rate tracking and management
 - **Newsletter**: Newsletter subscription management
+- **XTargetAccount**: X (Twitter) target account management for engagement
 
 ### 10. Data Management & External Integrations
 - **NftsDatum**: External NFT data integration
 - **NftCollectionsDatum**: Collection data from external sources
 - **DappRadarCollectionDatum**: DappRadar integration data
 - **ArchwayCollection**: Archway blockchain specific data
+- **DumpDatum**: Data dump and temporary storage
+- **Wallet**: Wallet type definitions and metadata
 
 ## Technical Architecture
 

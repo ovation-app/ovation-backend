@@ -14,7 +14,11 @@ The Ovation.Infrastructure layer serves as the persistence and external service 
   - Social features (FollowRepository, NotificationRepository)
   - Business logic (BadgeRepository, DiscoverRepository, SearchRepository)
   - Content management (NewsletterRepository, FeedbackRepository)
+  - Developer features (DevRepository)
+  - Home and marketplace features (HomeRepository, MarketplaceRepository)
+  - Webhook integration (WebhookRepository)
 - **Unit of Work**: Centralized transaction management through `UnitOfWork`
+- **Base Repository**: Common repository functionality with SignalR integration and Sentry monitoring
 
 ### 2. Multi-Blockchain NFT Integration
 The infrastructure supports multiple blockchain networks through dedicated service implementations:
@@ -62,16 +66,22 @@ Powered by Quartz.NET scheduler with the following job types:
 - `SyncUserNftIdJob`: Synchronizes user NFT identifiers
 - `GetUserNftCustodyDateJob`: Tracks NFT custody dates
 
+#### NFT Data Synchronization Jobs:
+- `SyncEvmNftDataJob`: Synchronizes EVM NFT data
+- `SyncSolanaNftDataJob`: Synchronizes Solana NFT data
+
 ### 5. Real-time Communication
 - **SignalR Integration**: Real-time notifications and updates
-- **NotificationService**: Centralized notification management
+- **NotificationService**: Centralized notification management with hub context
 - **WebSocket Support**: For live data updates
+- **Connection Management**: User connection tracking and offline notification queuing
 
 ### 6. Observability & Monitoring
 - **Sentry Integration**: Error tracking and performance monitoring
 - **OpenTelemetry**: Distributed tracing and metrics collection
 - **Custom Logging**: Structured logging with custom enrichers
 - **Entity Framework Instrumentation**: Database query monitoring
+- **SentryService**: Custom Sentry service for breadcrumb tracking and context management
 
 ## Technical Architecture
 
@@ -102,14 +112,17 @@ The `ClientsServiceExtension.ConfigureClients()` method configures named HTTP cl
 - Optimized connection pooling (15-minute lifetime)
 - Proper headers and authentication
 - Circuit breaker patterns for resilience
+- Named clients for different blockchain services (Alchemy, NFTScan, etc.)
 
 ### Database Schema
 The `OvationDbContext` manages a comprehensive schema including:
-- **User Management**: Users, profiles, social connections
-- **NFT Data**: Collections, individual NFTs, transactions
+- **User Management**: Users, profiles, social connections, verification
+- **NFT Data**: Collections, individual NFTs, transactions, activities
 - **Portfolio Tracking**: Wallet values, sales records, portfolio metrics
-- **Gamification**: Badges, achievements, user tasks
+- **Gamification**: Badges, achievements, user tasks, milestones
 - **Analytics**: User stats, experience tracking, referral data
+- **External Data**: NFTScan data, DappRadar collections, Archway collections
+- **Developer Tools**: Developer tokens, chain rates, target accounts
 
 ## Key Technical Aspects
 

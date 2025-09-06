@@ -12,6 +12,7 @@ The Ovation Web API is a comprehensive RESTful API built with ASP.NET Core 8.0 t
 - **Password Management**: Change password, forgot password with OTP verification
 - **Account Verification**: Email verification with OTP codes
 - **Custom Token Filter**: Additional security layer with token-based authorization
+- **Core Filter**: Developer token-based authorization for core endpoints
 
 ### 2. User Profile Management
 - **Profile CRUD Operations**: Complete profile management with personal info, cover images, social links
@@ -20,6 +21,8 @@ The Ovation Web API is a comprehensive RESTful API built with ASP.NET Core 8.0 t
 - **Privacy Controls**: NFT visibility settings and privacy management
 - **User Verification**: Multiple verification types for user authenticity
 - **Social Features**: Follow/unfollow functionality with follower/following lists
+- **Featured Items**: Manage featured NFTs and collections
+- **Favorite NFTs**: Mark and manage favorite NFTs
 
 ### 3. NFT & Portfolio Management
 - **NFT Display**: View user's NFT collections with pagination and filtering
@@ -64,6 +67,8 @@ The Ovation Web API is a comprehensive RESTful API built with ASP.NET Core 8.0 t
 - **Badge System**: Achievement and recognition system
 - **Path Management**: User journey and progression tracking
 - **Webhook Support**: External system integration capabilities
+- **Developer Token Management**: Developer access and token filtering
+- **Marketplace Integration**: NFT marketplace data and collection information
 
 ## Technical Architecture
 
@@ -81,13 +86,16 @@ The Ovation Web API is a comprehensive RESTful API built with ASP.NET Core 8.0 t
 - **JSON Serialization**: Newtonsoft.Json
 - **Logging**: Serilog with custom enrichers
 - **Observability**: OpenTelemetry and Sentry integration
+- **Unique Identifiers**: ULID for unique ID generation
+- **Caching**: Distributed memory cache
 
 ### 3. Security Features
 - **JWT Authentication**: Secure token-based authentication
 - **CORS Configuration**: Cross-origin resource sharing setup
 - **Antiforgery Protection**: CSRF protection
-- **Custom Authorization Filters**: Token-based access control
+- **Custom Authorization Filters**: Token-based access control (TokenFilter, CoreFilter)
 - **Input Validation**: Comprehensive request validation
+- **Authorization Attributes**: Authorize and AllowAnonymous attributes
 
 ### 4. Performance & Scalability
 - **Distributed Caching**: Memory cache implementation
@@ -108,6 +116,8 @@ The Ovation Web API is a comprehensive RESTful API built with ASP.NET Core 8.0 t
 - **Error Handling**: Comprehensive error management
 - **API Versioning**: Swagger documentation with versioning
 - **Rate Limiting**: Request throttling capabilities
+- **Base Controller**: Common controller functionality with MediatR integration
+- **HTTP Context Access**: HttpContextAccessor for request context
 
 ## Configuration & Deployment
 

@@ -43,17 +43,18 @@ All data access is abstracted through repository interfaces, providing:
 - Claimable profile creation
 
 **Commands**:
-- `RegisterUserCommand`
-- `NormalLoginCommand` / `GoogleLoginCommand` / `XLoginCommand`
-- `ChangePasswordCommand`
-- `CreateClaimableProfileCommand`
-- `GetUserDataCommand`
+- `RegisterUserCommandHandler`
+- `NormalLoginCommandHandler` / `GoogleLoginCommandHandler` / `XLoginCommandHandler`
+- `ChangePasswordCommandHandler`
+- `CreateClaimableProfileCommandHandler`
+- `GetUserDataCommandHandler`
 
 **Queries**:
-- `AuthUserDataQuery`
-- `CheckEmailQuery` / `CheckUsernameQuery`
-- `VerifyOtpQuery` / `VerifyAcctQuery`
-- `ForgetPasswordQuery`
+- `AuthUserDataQueryHandler`
+- `CheckEmailQueryHandler` / `CheckUsernameQueryHandler`
+- `VerifyOtpQueryHandler` / `VerifyAcctQueryHandler`
+- `ForgetPasswordQueryHandler`
+- `CheckVerifyAcctQueryHandler`
 
 ### 2. Asset Management (`AssetFeatures`)
 **Purpose**: NFT and token portfolio management
@@ -64,31 +65,52 @@ All data access is abstracted through repository interfaces, providing:
 - Multi-chain asset support
 
 **Queries**:
-- `GetCollectionQuery` / `GetCollectionTokensQuery`
-- `GetOwnerDistributionQuery`
-- `GetTokenTransactionQuery`
+- `GetCollectionQueryHandler` / `GetCollectionTokensQueryHandler`
+- `GetOwnerDistributionQueryHandler`
+- `GetTokenTransactionQueryHandler`
+- `GetTokenQueryHandler`
 
 ### 3. Profile Management (`ProfileFeatures`)
 **Purpose**: User profile and portfolio management
 **Key Functionalities**:
-- User profile data retrieval
-- NFT portfolio overview
+- User profile data retrieval and management
+- NFT portfolio overview and management
 - Social connections and experiences
-- Verification status
+- Verification status management
 - Favorite NFTs management
-- Portfolio statistics
+- Portfolio statistics and analytics
+- Profile image and cover management
+- Social links management
+
+**Commands**:
+- `AddUserExperienceCommandHandler`
+- `UpdateUserExperienceCommandHandler`
+- `DeleteUserExperienceCommandHandler`
+- `UpdateUserProfileCommandHandler`
+- `UpdateUserSocialsCommandHandler`
+- `UpdateUserProfileImageCommandHandler`
+- `UpdateUserCoverImageCommandHandler`
+- `UpdateNftVisibilityCommandHandler`
+- `UpdateNftSaleCommandHandler`
+- `AddUserFavNftCommandHandler`
+- `UpdateUserFavNftCommandHandler`
+- `DeleteUserFavNftCommandHandler`
+- `AddUserFeaturedItemCommandHandler`
+- `UpdateUserFeaturedItemCommandHandler`
+- `DeleteUserFeaturedItemCommandHandler`
 
 **Queries**:
-- `GetUserQuery` / `GetAuthUserQuery`
-- `GetUserNftsHandler`
-- `GetUserWalletsQuery`
-- `GetUserPortfolioQuery`
-- `GetUserStatQuery`
-- `GetUserSocialsQuery`
-- `GetUserExperiencesQuery`
-- `GetUserBadgesQuery`
-- `GetUserFavNftQuery`
-- `GetNftOverviewQuery`
+- `GetUserQueryHandler` / `GetAuthUserQueryHandler`
+- `GetUserNftsQueryHandler`
+- `GetUserWalletsQueryHandler`
+- `GetUserPortfolioQueryHandler`
+- `GetUserStatQueryHandler`
+- `GetUserSocialsQueryHandler`
+- `GetUserExperiencesQueryHandler`
+- `GetUserBadgesQueryHandler`
+- `GetUserFavNftQueryHandler`
+- `GetNftOverviewQueryHandler`
+- `GetUserFeaturedItemsQueryHandler`
 
 ### 4. Discovery & Analytics (`DiscoverFeatures`)
 **Purpose**: NFT market analysis and trending data
@@ -99,16 +121,23 @@ All data access is abstracted through repository interfaces, providing:
 - Market trends and analytics
 - Founder NFT tracking
 - Net worth calculations
+- Top NFT holders analysis
+- Most viewed profiles
+- Sales analytics
 
 **Queries**:
-- `GetBluechipHoldersQuery`
-- `GetTopCreatorsQuery` / `GetTopContributorsQuery`
-- `GetNftRankingQuery`
-- `GetMostViewedQuery` / `GetMostSoldQuery`
-- `GetHighestValuedNftQuery`
-- `GetFounderNftRankingQuery`
-- `GetFeaturedProfileQuery`
-- `GetNetworthQuery`
+- `GetBluechipHoldersQueryHandler`
+- `GetTopCreatorsQueryHandler` / `GetTopContributorsQueryHandler`
+- `GetNftRankingQueryHandler`
+- `GetMostViewedQueryHandler` / `GetMostSoldQueryHandler`
+- `GetHighestValuedNftQueryHandler`
+- `GetFounderNftRankingQueryHandler`
+- `GetFeaturedProfileQueryHandler`
+- `GetNetworthQueryHandler`
+- `GetTopNftHolderQueryHandler`
+- `GetMostViewedProfilesQueryHandler`
+- `GetMostSoldNftsQueryHandler`
+- `GetTopValuedNftQueryHandler`
 
 ### 5. Social Features (`FollowFeatures`)
 **Purpose**: User social interactions and connections
@@ -118,14 +147,14 @@ All data access is abstracted through repository interfaces, providing:
 - Social network building
 
 **Commands**:
-- `FollowUserCommand`
-- `UnfollowUserCommand`
+- `FollowUserCommandHandler`
+- `UnfollowUserCommandHandler`
 
 **Queries**:
-- `GetUserFollowersQuery`
-- `GetUserFollowingsQuery`
-- `GetUsernameFollowersQuery`
-- `GetUsernameFollowingsQuery`
+- `GetUserFollowersQueryHandler`
+- `GetUserFollowingsQueryHandler`
+- `GetUsernameFollowersQueryHandler`
+- `GetUsernameFollowingsQueryHandler`
 
 ### 6. Notification System (`NotificationFeatures`)
 **Purpose**: Real-time notifications and alerts
@@ -135,12 +164,12 @@ All data access is abstracted through repository interfaces, providing:
 - Bulk notification operations
 
 **Commands**:
-- `ReadNotificationCommand`
-- `ReadAllNotificationsCommand`
+- `ReadNotificationCommandHandler`
+- `ReadAllNotificationsCommandHandler`
 
 **Queries**:
-- `GetNotificationsQuery`
-- `GetNotificationCountQuery`
+- `GetNotificationsQueryHandler`
+- `GetNotificationCountQueryHandler`
 
 ### 7. Search & Discovery (`SearchFeatures`)
 **Purpose**: Content discovery and search functionality
@@ -150,9 +179,9 @@ All data access is abstracted through repository interfaces, providing:
 - Collection search
 
 **Queries**:
-- `SearchUserQuery`
-- `SearchNftQuery`
-- `SearchCollectionQuery`
+- `SearchUserQueryHandler`
+- `SearchNftQueryHandler`
+- `SearchCollectionQueryHandler`
 
 ### 8. Wallet Management (`WalletFeatures`)
 **Purpose**: Multi-chain wallet integration
@@ -161,11 +190,11 @@ All data access is abstracted through repository interfaces, providing:
 - Multi-chain support (Ethereum, Solana, Tezos, etc.)
 
 **Commands**:
-- `AddWalletCommand`
+- `AddWalletCommandHandler`
 
 **Queries**:
-- `GetWalletsQuery`
-- `GetWalletQuery`
+- `GetWalletsQueryHandler`
+- `GetWalletQueryHandler`
 
 ### 9. Badge System (`BadgeFeatures`)
 **Purpose**: Achievement and gamification system
@@ -175,8 +204,8 @@ All data access is abstracted through repository interfaces, providing:
 - Achievement tracking
 
 **Queries**:
-- `GetBadgesQuery`
-- `GetBlueChipsQuery`
+- `GetBadgesQueryHandler`
+- `GetBlueChipsQueryHandler`
 
 ### 10. Home & Feed (`HomeFeatures`)
 **Purpose**: Main dashboard and content feed
@@ -186,8 +215,8 @@ All data access is abstracted through repository interfaces, providing:
 - Trending content
 
 **Queries**:
-- `GetUsersQuery`
-- `GetNftsQuery`
+- `GetUsersQueryHandler`
+- `GetNftsQueryHandler`
 
 ### 11. Feedback System (`FeedbackFeatures`)
 **Purpose**: User feedback collection
@@ -196,7 +225,7 @@ All data access is abstracted through repository interfaces, providing:
 - User experience tracking
 
 **Commands**:
-- `AddFeedbackCommand`
+- `AddFeedbackCommandHandler`
 
 ### 12. Newsletter & Communication (`NewsletterFeatures`)
 **Purpose**: Email communication and subscriptions
@@ -205,8 +234,8 @@ All data access is abstracted through repository interfaces, providing:
 - Nuclear playground features
 
 **Commands**:
-- `AddNewsSubcriberCommand`
-- `NuclearPlayGroundCommand`
+- `AddNewsSubcriberCommandHandler`
+- `NuclearPlayGroundCommandHandler`
 
 ### 13. Path Management (`PathFeatures`)
 **Purpose**: User journey and progression tracking
@@ -215,11 +244,11 @@ All data access is abstracted through repository interfaces, providing:
 - User progression tracking
 
 **Commands**:
-- `AddPathCommand`
+- `AddPathCommandHandler`
 
 **Queries**:
-- `GetPathQuery`
-- `GetPathsQuery`
+- `GetPathQueryHandler`
+- `GetPathsQueryHandler`
 
 ### 14. Webhook Integration (`WebhookFeatures`)
 **Purpose**: External service integration
@@ -228,7 +257,7 @@ All data access is abstracted through repository interfaces, providing:
 - Real-time data synchronization
 
 **Commands**:
-- `AddNftActivityCommand`
+- `AddNftActivityCommandHandler`
 
 ### 15. Developer Token Features (`DevTokenFeatures`)
 **Purpose**: Token filtering and management for developers
@@ -237,8 +266,8 @@ All data access is abstracted through repository interfaces, providing:
 - Core token management
 
 **Queries**:
-- `TokenFilterQuery`
-- `CoreTokenFilterQuery`
+- `TokenFilterQueryHandler`
+- `CoreTokenFilterQueryHandler`
 
 ### 16. Affiliation System (`AffilationFeatures`)
 **Purpose**: Referral and affiliation tracking
@@ -247,8 +276,17 @@ All data access is abstracted through repository interfaces, providing:
 - Affiliation data management
 
 **Queries**:
-- `GetAffilationDataQuery`
-- `GetInvitedUserQuery`
+- `GetAffilationDataQueryHandler`
+- `GetInvitedUserQueryHandler`
+
+### 17. Marketplace Features (`MarketplaceFeatures`)
+**Purpose**: NFT marketplace integration and management
+**Key Functionalities**:
+- Marketplace data retrieval
+- Collection marketplace information
+
+**Queries**:
+- `GetMarketplaceQueryHandler`
 
 ## Technical Implementation Details
 

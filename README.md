@@ -4,6 +4,8 @@
 
 Ovation is a comprehensive social NFT (Non-Fungible Token) and blockchain portfolio management platform built with ASP.NET Core 8.0. The platform enables users to manage their digital assets across multiple blockchain networks, connect with other collectors, discover new opportunities, and build their NFT portfolio with social features.
 
+The platform serves as a centralized hub for NFT collectors, providing real-time portfolio tracking, social networking, gamification elements, and comprehensive analytics across multiple blockchain ecosystems.
+
 ## 🏗️ System Architecture
 
 Ovation follows **Clean Architecture** principles with a clear separation of concerns across four main layers:
@@ -110,7 +112,7 @@ Ovation follows **Clean Architecture** principles with a clear separation of con
 ### **Technology Stack**
 - **Framework**: ASP.NET Core 8.0
 - **Database**: MySQL with Entity Framework Core
-- **Authentication**: JWT Bearer tokens
+- **Authentication**: JWT Bearer tokens with custom filters
 - **Real-time**: SignalR with WebSocket support
 - **CQRS**: MediatR for command/query separation
 - **Validation**: FluentValidation with pipeline behavior
@@ -118,6 +120,9 @@ Ovation follows **Clean Architecture** principles with a clear separation of con
 - **Observability**: OpenTelemetry + Sentry integration
 - **Background Jobs**: Quartz.NET scheduler
 - **Containerization**: Docker support
+- **Unique IDs**: ULID for unique identifier generation
+- **Caching**: Distributed memory cache
+- **JSON**: Newtonsoft.Json for serialization
 
 ### **Architecture Patterns**
 
@@ -147,20 +152,25 @@ The system supports multiple blockchain networks through dedicated service imple
 ┌─────────────────────────────────────────────────────────────┐
 │                Blockchain Services                        │
 ├─────────────────────────────────────────────────────────────┤
-│  • EvmsService      (Ethereum, Polygon, Base, etc.)     │
+│  • EvmsService      (Ethereum, Polygon, Base, Optimism)  │
 │  • SolanaService    (Solana blockchain)                 │
 │  • TezosService     (Tezos/Objkt marketplace)          │
 │  • TonService       (TON blockchain)                    │
 │  • ArchwayService   (Archway blockchain)                │
 │  • StargazeService  (Stargaze/Cosmos)                  │
+│  • CollectionPriceService (Real-time pricing data)      │
+│  • GraphQLService   (GraphQL API integration)           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 #### **External API Integrations**
 - **NFTScan API**: Primary NFT data provider for EVM, Solana, and TON
+- **Alchemy API**: Enhanced Ethereum NFT data and transactions
 - **GraphQL Services**: For Stargaze and other GraphQL-based platforms
 - **REST APIs**: Direct integrations with blockchain-specific APIs
 - **Collection Price Services**: Real-time NFT collection pricing
+- **Magic Eden**: Solana NFT marketplace integration
+- **DappRadar**: DeFi and NFT analytics
 
 ### **Background Processing**
 
@@ -188,6 +198,10 @@ The system uses Quartz.NET for scheduled background jobs:
 │    - DeleteWalletDataJob                               │
 │    - SyncUserNftIdJob                                  │
 │    - GetUserNftCustodyDateJob                          │
+├─────────────────────────────────────────────────────────────┤
+│  • NFT Data Synchronization Jobs                      │
+│    - SyncEvmNftDataJob                                │
+│    - SyncSolanaNftDataJob                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -248,6 +262,7 @@ OVATION_KEY=jwt_secret_key
 PORT=8080
 SENTRY_DNS=sentry_dsn
 NFTSCAN_API_KEY=nftscan_api_key
+ALCHEMY_API_KEY=alchemy_api_key
 ```
 
 ### **Docker Support**
@@ -273,46 +288,55 @@ http://localhost:8080/swagger
 
 The system manages a comprehensive schema including:
 
-- **User Management**: Users, profiles, social connections, experiences
-- **NFT Data**: Collections, individual NFTs, transactions, activities
+- **User Management**: Users, profiles, social connections, experiences, verification
+- **NFT Data**: Collections, individual NFTs, transactions, activities, records
 - **Portfolio Tracking**: Wallet values, sales records, portfolio metrics
 - **Gamification**: Badges, achievements, user tasks, milestones
 - **Analytics**: User stats, experience tracking, referral data
-- **Social Features**: Followers, notifications, feedback
+- **Social Features**: Followers, notifications, feedback, featured items
+- **External Data**: NFTScan data, DappRadar collections, Archway collections
+- **Developer Tools**: Developer tokens, chain rates, target accounts
 
 > **⚠️ Deprecated Entities**: The `UserNft` and `UserNftCollection` entities are deprecated. Use `UserNftDatum` and `UserNftCollectionDatum` instead for new development.
 
 ## 🔗 API Documentation
 
 The API provides comprehensive RESTful endpoints for:
-- **Authentication**: Login, registration, password management
-- **User Management**: Profile CRUD, social features
-- **NFT Management**: Portfolio, collections, transactions
-- **Discovery**: Search, rankings, analytics
-- **Real-time**: SignalR hub for live updates
+- **Authentication**: Login, registration, password management, verification
+- **User Management**: Profile CRUD, social features, experiences
+- **NFT Management**: Portfolio, collections, transactions, favorites
+- **Discovery**: Search, rankings, analytics, marketplace data
+- **Real-time**: SignalR hub for live updates and notifications
+- **Developer Tools**: Token filtering, core endpoints
+- **Webhooks**: External system integration
 
 Access the interactive API documentation at `/swagger` when running the application.
 
 ## 🎯 Key Benefits
 
 1. **Multi-Chain Support**: Unified experience across multiple blockchains
-2. **Social Integration**: Connect with other NFT collectors
-3. **Real-time Updates**: Live portfolio and market data
-4. **Scalable Architecture**: Clean architecture for easy maintenance
+2. **Social Integration**: Connect with other NFT collectors and build communities
+3. **Real-time Updates**: Live portfolio and market data with SignalR
+4. **Scalable Architecture**: Clean architecture for easy maintenance and extension
 5. **Comprehensive Analytics**: Detailed portfolio and market insights
-6. **Security First**: Robust authentication and authorization
+6. **Security First**: Robust authentication and authorization with custom filters
 7. **Developer Friendly**: Well-documented APIs and clean code structure
+8. **Gamification**: Achievement system with badges and milestones
+9. **Background Processing**: Automated data synchronization and maintenance
+10. **Observability**: Comprehensive monitoring with Sentry and OpenTelemetry
 
 ## 🤝 Contributing
 
 The Ovation platform is built with clean architecture principles, making it easy to:
-- Add new blockchain networks
-- Extend social features
-- Implement new analytics
-- Add custom integrations
-- Modify business logic
+- Add new blockchain networks and integrations
+- Extend social features and community functionality
+- Implement new analytics and reporting features
+- Add custom integrations and webhooks
+- Modify business logic and domain rules
+- Scale horizontally with microservices
+- Add new gamification elements and achievements
 
-Each layer has clear responsibilities and interfaces, ensuring maintainable and testable code.
+Each layer has clear responsibilities and interfaces, ensuring maintainable and testable code. The CQRS pattern with MediatR provides excellent separation of concerns and makes the codebase highly extensible.
 
 ---
 
