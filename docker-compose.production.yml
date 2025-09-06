@@ -1,0 +1,190 @@
+version: '3.8'
+
+services:
+  # MySQL Database with Production Configuration
+  mysql:
+    image: mysql:8.0
+    container_name: ovation-mysql-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_prod_data:/var/lib/mysql
+      - ./mysql/production.cnf:/etc/mysql/conf.d/production.cnf:ro
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis Cache with Production Configuration
+  redis:
+    image: redis:7-alpine
+    container_name: ovation-redis-prod
+    volumes:
+      - redis_prod_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 20s
+      retries: 10
+
+  # Ovation API with Production Configuration
+  ovation-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: ovation-api-prod
+    environment:
+      # Database Configuration
+      - OVATION_DB=Server=mysql;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};Port=3306;SslMode=Required;
+      
+      # JWT Configuration
+      - OVATION_KEY=${OVATION_KEY}
+      
+      # Email Configuration
+      - EMAIL_KEY=${EMAIL_KEY}
+      
+      # External API Keys
+      - NFTSCAN_KEY=${NFTSCAN_KEY}
+      - ALCHEMY_KEY=${ALCHEMY_KEY}
+      - MAGICEDEN_KEY=${MAGICEDEN_KEY}
+      - DAPP_RADAR_KEY=${DAPP_RADAR_KEY}
+      - MINTIFY_KEY=${MINTIFY_KEY}
+      - MORALIS_KEY=${MORALIS_KEY}
+      
+      # Social APIs
+      - X_CONSUMER_KEY=${X_CONSUMER_KEY}
+      - X_CONSUMER_SECRET=${X_CONSUMER_SECRET}
+      - X_ACCESS_TOKEN=${X_ACCESS_TOKEN}
+      - X_ACCESS_TOKEN_SECRET=${X_ACCESS_TOKEN_SECRET}
+      - X_KEY=${X_KEY}
+      
+      # AI Services
+      - GOOGLE_AI_MODEL_API_KEY=${GOOGLE_AI_MODEL_API_KEY}
+      - GOOGLE_AI_MODEL=${GOOGLE_AI_MODEL}
+      
+      # Monitoring
+      - SENTRY_DNS=${SENTRY_DNS}
+      
+      # Application Configuration
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: ovation-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/production.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - ovation-api
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+
+  # Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ovation-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ovation-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  mysql_prod_data:
+    driver: local
+  redis_prod_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  ovation-network:
+    driver: bridge

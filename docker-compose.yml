@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: ovation-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ovation_db}
+      MYSQL_USER: ${MYSQL_USER:-ovation_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ovation_password}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis Cache (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: ovation-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 20s
+      retries: 10
+
+  # Ovation API
+  ovation-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ovation-api
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      # Database Configuration
+      - OVATION_DB=Server=mysql;Database=${MYSQL_DATABASE:-ovation_db};User=${MYSQL_USER:-ovation_user};Password=${MYSQL_PASSWORD:-ovation_password};Port=3306;
+      
+      # JWT Configuration
+      - OVATION_KEY=${OVATION_KEY:-your-super-secret-jwt-key-here}
+      
+      # Email Configuration
+      - EMAIL_KEY=${EMAIL_KEY:-your-email-app-password}
+      
+      # External API Keys (Optional)
+      - NFTSCAN_KEY=${NFTSCAN_KEY:-}
+      - ALCHEMY_KEY=${ALCHEMY_KEY:-}
+      - MAGICEDEN_KEY=${MAGICEDEN_KEY:-}
+      - DAPP_RADAR_KEY=${DAPP_RADAR_KEY:-}
+      - MINTIFY_KEY=${MINTIFY_KEY:-}
+      - MORALIS_KEY=${MORALIS_KEY:-}
+      
+      # Social APIs (Optional)
+      - X_CONSUMER_KEY=${X_CONSUMER_KEY:-}
+      - X_CONSUMER_SECRET=${X_CONSUMER_SECRET:-}
+      - X_ACCESS_TOKEN=${X_ACCESS_TOKEN:-}
+      - X_ACCESS_TOKEN_SECRET=${X_ACCESS_TOKEN_SECRET:-}
+      - X_KEY=${X_KEY:-}
+      
+      # AI Services (Optional)
+      - GOOGLE_AI_MODEL_API_KEY=${GOOGLE_AI_MODEL_API_KEY:-}
+      - GOOGLE_AI_MODEL=${GOOGLE_AI_MODEL:-gemini-pro}
+      
+      # Monitoring (Optional)
+      - SENTRY_DNS=${SENTRY_DNS:-}
+      
+      # Application Configuration
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: ovation-nginx
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_SSL_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - ovation-api
+    networks:
+      - ovation-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  ovation-network:
+    driver: bridge
